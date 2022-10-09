@@ -28,5 +28,6 @@ Metaheuristics at PJATK-Gdańsk
       PRZYKŁAD   zadanie1 config.json
     
     Na dodatkowy punkt:
-     Jeśli tekst nie mieści się w ramce, to proszę go połamać na kawałki o długości takiej, aby zmieściły się w szerokości ramki.
+     Jeśli tekst nie mieści się w ramce, to proszę go połamać na kawałki o długości takiej,
+     aby zmieściły się w szerokości ramki.
   
