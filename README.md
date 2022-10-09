@@ -2,10 +2,15 @@
 Metaheuristics at PJATK-Gdańsk
 
 ## ZADANIE 1
-    Na zajęciach naszym głównym językiem programowania będzie C++. Korzystamy ze współczesnej wersji C++, to znaczy powyżej C++11. Sugeruję C++17 lub C++20.    
-    Zadanie polega na przygotowaniu sobie środowiska pracy i zrobieniu przykładowego programu. Program będzie korzystał z plików JSON i pozwoli nam na przetrenowanie  przydatnych elementów.
+    Na zajęciach naszym głównym językiem programowania będzie C++. Korzystamy ze współczesnej wersji C++,
+    to znaczy powyżej C++11. Sugeruję C++17 lub C++20.    
+    Zadanie polega na przygotowaniu sobie środowiska pracy i zrobieniu przykładowego programu. 
+    Program będzie korzystał z plików JSON i pozwoli nam na przetrenowanie  przydatnych elementów.
  
-    Zadanie: Przygotuj program do wyświetlania tekstu w ramce. Niech konfiguracja będzie w pliku JSON. Skorzystaj z biblioteki do obsługi plików JSON:    https://github.com/nlohmann/json . Sam plik nagłówkowy do umieszczenia w katalogu z projektem jest tu: https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+    Zadanie: Przygotuj program do wyświetlania tekstu w ramce. Niech konfiguracja będzie w pliku JSON.
+    Skorzystaj z biblioteki do obsługi plików JSON:    https://github.com/nlohmann/json .
+    Sam plik nagłówkowy do umieszczenia w katalogu z projektem jest tu: 
+    https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
  
     Program Twój powinien działać według opisu:
 
