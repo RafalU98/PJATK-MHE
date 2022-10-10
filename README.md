@@ -1,8 +1,8 @@
 # PJATK-MHE
-Metaheuristics at PJATK-Gdańsk - Solving Nanogram with using diffrent algorithms
+Metaheuristics at PJATK-Gdańsk - Solving Nonogram with using diffrent algorithms
 
-## Nanogram
-Nanogram also known as Paint by numbers is a logical puzzle which consist of a grid in which cell are either colored or left blank according to the numbers at the side, the solution of such a puzzle reveals a pixel-art picture. The numbers of this puzzle are displayed in a form of discrete tomography which measures how many consistent lines are filled/colored squeres that are in a given row or column. 
+## Nonogram
+Nonogram also known as Paint by numbers is a logical puzzle which consist of a grid in which cell are either colored or left blank according to the numbers at the side, the solution of such a puzzle reveals a pixel-art picture. The numbers of this puzzle are displayed in a form of discrete tomography which measures how many consistent lines are filled/colored squeres that are in a given row or column. 
         
 ### Example: Letter R  __________________________ Solution:
                         2 2 4 4                             2 2 4 4
