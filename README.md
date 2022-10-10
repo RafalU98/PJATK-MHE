@@ -20,8 +20,25 @@ Nanogram also known as Paint by numbers is a logical puzzle which consist of a g
                 0| | | | | | | | | |                0| | | | | | | | | |
                    
         
- 
-### ZADANIE 1
+### Task 1 - Lab 03/10/2022
+         Small introdction before starting the "real project"
+         
+         NAME
+    task1 - displaying the text in a frame according to the configuration in a JSON file
+        SYNTAX
+    job1 FILENAME
+        DESCRIPTION
+    The program loads the configuration from the FILENAME file in which it is described
+    the size of the frame and the text to be placed inside. The frame will be text with dimensions w to h
+    with text vertically and horizontally centered.
+    
+    The configuration file has the following format:
+       {"w": WIDTH FRAMES, "h": FRAMES, "text": FRAME TEXT}
+        EXAMPLE
+    task1 config.json
+
+
+### Task 2 - Lab 10/10/2022
         Implement the data structures for the task.
  
         You need a task structure to be solved. In the case of a traveling salesman, 
