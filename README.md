@@ -1,33 +1,32 @@
 # PJATK-MHE
-Metaheuristics at PJATK-Gdańsk
+Metaheuristics at PJATK-Gdańsk - Solving Nanogram with using diffrent algorithms
 
-## ZADANIE 1
-    Na zajęciach naszym głównym językiem programowania będzie C++. Korzystamy ze współczesnej wersji C++,
-    to znaczy powyżej C++11. Sugeruję C++17 lub C++20.    
-    Zadanie polega na przygotowaniu sobie środowiska pracy i zrobieniu przykładowego programu. 
-    Program będzie korzystał z plików JSON i pozwoli nam na przetrenowanie  przydatnych elementów.
+## Nanogram
+Nanogram also known as Paint by numbers is a logical puzzle which consist of a grid in which cell are either colored or left blank according to the numbers at the side, the solution of such a puzzle reveals a pixel-art picture. The numbers of this puzzle are displayed in a form of discrete tomography which measures how many consistent lines are filled/colored squeres that are in a given row or column. 
+        
+### Example: Letter R  __________________________ Solution:
+                        2 2 4 4                             2 2 4 4
+                  0 9 9 2 3 2 2 1 0                   0 9 9 2 3 2 2 1 0
+                0| | | | | | | | | |                0| | | | | | | | | |
+                4| | | | | | | | | |                4| |X|X|X|X| | | | |
+                6| | | | | | | | | |                6| |X|X|X|X|X|X| | |
+              2 2| | | | | | | | | |              2 2| |X|X| | |X|X| | |
+              2 2| | | | | | | | | |              2 2| |X|X| | |X|X| | |
+                6| | | | | | | | | |                6| |X|X|X|X|X|X| | |
+                4| | | | | | | | | |                4| |X|X|X|X| | | | |
+              2 2| | | | | | | | | |              2 2| |X|X| |X|X| | | |
+              2 2| | | | | | | | | |              2 2| |X|X| | |X|X| | |
+              2 2| | | | | | | | | |              2 2| |X|X| | | |X|X| |
+                0| | | | | | | | | |                0| | | | | | | | | |
+                   
+        
  
-    Zadanie: Przygotuj program do wyświetlania tekstu w ramce. Niech konfiguracja będzie w pliku JSON.
-    Skorzystaj z biblioteki do obsługi plików JSON:    https://github.com/nlohmann/json .
-    Sam plik nagłówkowy do umieszczenia w katalogu z projektem jest tu: 
-    https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+### ZADANIE 1
+        Implement the data structures for the task.
  
-    Program Twój powinien działać według opisu:
+        You need a task structure to be solved. In the case of a traveling salesman, 
+        it will be a set of cities with distances between cities (or a measure of distance function).
+ 
+        You need a solution structure. In the case of a traveling salesman, 
+        this will be a list that sets the order of the cities to visit.
 
-    NAZWA
-     zadanie1 - wyświetlenie tekstu w ramce według konfiguracji w pliku JSON
-    SKŁADNIA
-     zadanie1 NAZWAPLIKU
-    OPIS
-     Program ładuje konfigurację z pliku NAZWAPLIKU w którym opisany jest
-    rozmiar ramki oraz tekst do umieszczenia w środku. Ramka będzie tekstowa wymiarów w na h
-    z tekstem wyśrodkowanym w pionie i poziomie.
-    
-      Plik konfiguracyjny ma taki format: 
-      {"w":SZEROKOSCRAMKI,"h":WYSOKOSCRAMKI,"text":TEKSTDOWPISANIAWRAMCE}
-      PRZYKŁAD   zadanie1 config.json
-    
-    Na dodatkowy punkt:
-     Jeśli tekst nie mieści się w ramce, to proszę go połamać na kawałki o długości takiej,
-     aby zmieściły się w szerokości ramki.
-  
