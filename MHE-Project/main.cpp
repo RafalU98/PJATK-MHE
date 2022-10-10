@@ -50,9 +50,9 @@ std::ostream &operator<<(std::ostream &output, const nonogram_t &nonogram) {
             output << nonogram.row_clues[h][rcs];
         output << "\t";
         for (int w = 0; w < nonogram.width + 1; w++) {
-            auto &val = nonogram.board[h * nonogram.width + w];
-            output << ((val > 0) ? "███" :
-                       ((val < 1) ? "   " : "")) << "|";
+            auto &value = nonogram.board[h * nonogram.width + w];
+            output << ((value == 1) ? "███" :
+                       ((value == 0) ? "   " : "")) << "|";
         }
         output << std::endl;
     }
