@@ -42,7 +42,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /home/pist4szek/Downloads/clion-2022.2.3/bin/cmake/linux/bin/cmake --regenerate-during-build -S/home/pist4szek/CLionProjects/MHE-Project -B/home/pist4szek/CLionProjects/MHE-Project/cmake-build-debug
+  command = /home/pist4szek/Downloads/clion-2022.2.3/bin/cmake/linux/bin/cmake --regenerate-during-build -S/home/pist4szek/Documents/GitHub/PJATK-MHE/MHE-Project -B/home/pist4szek/Documents/GitHub/PJATK-MHE/MHE-Project/cmake-build-debug
   description = Re-running CMake...
   generator = 1
 
