@@ -1,0 +1,4 @@
+/home/pist4szek/Downloads/clion-2022.2.3/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/pist4szek/Downloads/clion-2022.2.3/bin/ninja/linux/ninja -G Ninja -S /home/pist4szek/CLionProjects/MHE-Project -B /home/pist4szek/CLionProjects/MHE-Project/cmake-build-debug
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/pist4szek/CLionProjects/MHE-Project/cmake-build-debug
