@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <random>
 
 struct nonogram_t {
     int width;
@@ -18,7 +19,6 @@ struct nonogram_t {
         return board.at(y * width + x);
     }
 };
-
 
 std::ostream &operator<<(std::ostream &output, const nonogram_t &nonogram) {
     output << "\t";
@@ -57,6 +57,7 @@ std::ostream &operator<<(std::ostream &output, const nonogram_t &nonogram) {
  */
 int count_inconsistent(const nonogram_t &nonogram) {
     int mistakes = 0;
+
     //Count wrong submitted Rows
     for (int y = 0; y < nonogram.height; y++) {
         std::vector<int> set = {};
@@ -72,13 +73,12 @@ int count_inconsistent(const nonogram_t &nonogram) {
         if (set.empty()) set.push_back(0);
         if (set != nonogram.row_clues[y]) mistakes++;
     }
-    //Count wrong submitted Rows
 
     //Count wrong submitted Columns
     for (int x = 0; x < nonogram.width; x++) {
         std::vector<int> set = {};
         int filled_squares = 0;
-        for (int y = x; y <= nonogram.width * nonogram.height; y += nonogram.width) {
+        for (int y = x; y <= nonogram.board.size(); y += nonogram.width) {
             if (nonogram.board[y]== 1)
                 filled_squares++;
             if ((nonogram.board[y] == 0 || y == (nonogram.width * (nonogram.height - 1)) + x) && (filled_squares  != 0)){
@@ -89,7 +89,6 @@ int count_inconsistent(const nonogram_t &nonogram) {
         if (set.empty()) set.push_back(0);
         if (set != nonogram.column_clues[x]) mistakes++;
     }
-    //Count wrong submitted Columns
 
     return mistakes;
 }
@@ -110,25 +109,15 @@ bool next_solution(nonogram_t &nonogram) {
     return (i != nonogram.board.size());
 }
 
-nonogram_t nonogram = {
-        4,
-        4,
-        {{4}, {0}, {1, 1}, {4}},
-        {{1,2}, {1, 1}, {1, 1}, {1,2}},
-        {0, 0, 0, 0,
-         0, 0, 0, 0,
-         0, 0, 0, 0,
-         0, 0, 0, 0}
-};
-
-void Brute_Force() {
+void brute_force(nonogram_t nonogram) {
     int n = 0;
     while (next_solution(nonogram)) {
+        /*
         if ((n % 4096) == 0) {
             std::cout << "Wrong board at ";
             std::cout << n << " tries. Found " << evaluate(nonogram) << " mistakes in submitted Nonogram" << std::endl << nonogram << std::endl;
         }
-
+         */
         if (evaluate(nonogram) == 0) {
             std::cout << "Brute-Force found the right solution in " << n+1 << " tries." << std::endl;
             std::cout << nonogram << std::endl;
@@ -138,12 +127,96 @@ void Brute_Force() {
     }
 };
 
-int main() {
+
+std::vector<nonogram_t> generate_neighbours(const nonogram_t &nonogram) {
+    std::vector<nonogram_t> neighbours;
+    for (int i = 0; i < nonogram.board.size(); i++) {
+        if (nonogram.board[i] <= 0) {
+            auto new_board = nonogram;
+            new_board.board[i] = 1 - new_board.board[i];
+            neighbours.push_back(new_board);
+        }
+    }
+    return neighbours;
+}
+
+nonogram_t generate_random_solution(const nonogram_t &nonogram) {
+    using namespace  std;
+    static random_device rd;
+    static mt19937 rand(rd());
+    uniform_int_distribution<int> distribution(0,1);
+    nonogram_t rand_sol = nonogram;
+    for (int i = 0; i < nonogram.board.size(); i++) {
+        if (nonogram.board[i] <= 0) {
+            auto new_board = nonogram;
+            rand_sol.board[i] = distribution(rand);
+        }
+    }
+    return rand_sol;
+}
+
+std::vector<nonogram_t> random_board(const nonogram_t &nonogram) {
+    std::random_device random;
+    std::mt19937 gen(rand());
+    std::uniform_int_distribution<int> distribution(0,1);
+
+    for(int i = 0; i < nonogram.board.size(); i++) {
+        //  nonogram.board[i] = distribution(gen);
+    }
+    //return;
+}
+
+nonogram_t hill_climb_det(nonogram_t nonogram, int iterations) {
+
+}
+
+nonogram_t hill_climb(nonogram_t nonogram, int iterations) {
+
+}
+
+int main(int argc, char** argv) {
+
+    nonogram_t nonogram1 = {
+            5,
+            5,
+            {{1,1,1}, {0}, {0}, {0}, {0}},
+            {{1}, {0}, {1}, {0},{1}},
+            {0, 0, 0, 0,0,
+             0, 0, 0, 0,0,
+             0, 0, 0, 0,0,
+             0, 0, 0, 0,0,
+             0,0,0,0,0}
+    };
+    nonogram_t nonogram2 = {
+            4,
+            4,
+            {{4}, {1,1}, {1, 1}, {4}},
+            {{4}, {1, 1}, {1, 1}, {4}},
+            {0, 0, 0, 0,
+             0, 0, 0, 0,
+             0, 0, 0, 0,
+             0, 0, 0, 0}
+    };
+
+    auto nonogram = nonogram2;
+
     std::cout << "\n Nonogram to solve" << std::endl;
     std::cout << nonogram << std::endl;
 
+    for (auto neighbour : generate_neighbours(nonogram)) {
+        std::cout << " ------------------------------" << std::endl;
+        std::cout << neighbour << std::endl;
+    }
+    std::cout << " ------------------------------" << std::endl;
+    std::cout << generate_random_solution(nonogram) << std::endl;
+
+    std::cout << " ------------------------------" << std::endl;
     std::cout << "Solving with Brute_Force Algorithm" << std::endl;
-    Brute_Force();
+    brute_force(nonogram);
+    //random_board();
+
+
+
 
     return 0;
 }
