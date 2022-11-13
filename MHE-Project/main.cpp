@@ -129,7 +129,6 @@ nonogram_t generate_random_solution(const nonogram_t &nonogram) {
     nonogram_t random_solution = nonogram;
     for (int i = 0; i < nonogram.board.size(); i++) {
         if (nonogram.board[i] <= 0) {
-            auto new_board = nonogram;
             random_solution.board[i] = distribution(rand);
         }
     }
@@ -244,42 +243,52 @@ void random_solution(const nonogram_t &nonogram) {
         n++;
     }
 }
+nonogram_t nonogram1 = {
+        5,
+        5,
+        {{1, 1, 1}, {0}, {0}, {0}, {0}},
+        {{1}, {0}, {1}, {0}, {1}},
+        {0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0}
+};
+nonogram_t nonogram2 = {
+        4,
+        4,
+        {{4}, {1, 1}, {1, 1}, {4}},
+        {{4}, {1, 1}, {1, 1}, {4}},
+        {0, 0, 0, 0,
+         0, 0, 0, 0,
+         0, 0, 0, 0,
+         0, 0, 0, 0}
+};
+
+nonogram_t nonogram3 = {
+        3,
+        3,
+        {{1}, {0}, {1,1}},
+        {{1,1}, {0}, {1}},
+        {0, 0, 0,
+         0, 0, 0,
+         0, 0, 0}
+};
 
 int main(int argc, char **argv) {
 
-    nonogram_t nonogram1 = {
-            5,
-            5,
-            {{1, 1, 1}, {0}, {0}, {0}, {0}},
-            {{1}, {0}, {1}, {0}, {1}},
-            {0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0,
-             0, 0, 0, 0, 0}
-    };
-    nonogram_t nonogram2 = {
-            4,
-            4,
-            {{4}, {1, 1}, {1, 1}, {4}},
-            {{4}, {1, 1}, {1, 1}, {4}},
-            {0, 0, 0, 0,
-             0, 0, 0, 0,
-             0, 0, 0, 0,
-             0, 0, 0, 0}
-    };
-
-    nonogram_t nonogram3 = {
-            3,
-            3,
-            {{1}, {0}, {1,1}},
-            {{1,1}, {0}, {1}},
-            {0, 0, 0,
-             0, 0, 0,
-             0, 0, 0}
-    };
-
     //generate_nonogram(3);
+    std::cout << "Welcome\n"
+                 "To start the Program enter following:\n"
+                 "1ST ARGUMENT = Function (b -> BruteForce, r -> Random-Solution, "
+                 "hd -> Hill Climb Deterministic, hc -> Hill Climb Randomized\n"
+                 "2ND ARGUMENT = Iterations as an Integer\n"
+                 "3RD ARGUMENT = Size of the Nonogram Table\n"
+                 "4TH ARGUMENT = Column hints (numbers seperated by , columns by . )\n"
+                 "5th Argument = Row hints (numbers seperated by , rows by . )\n";
+
+    std::string  function = argv[1];
+
 
     const auto &nonogram = nonogram3;
     int iterations = 500;
