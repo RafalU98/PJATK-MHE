@@ -1,8 +1,12 @@
 #include <iostream>
+#include <fstream>
+#include "json.hpp"
 #include <vector>
 #include <string>
 #include <random>
 #include <chrono>
+#include <list>
+#include <functional>
 
 struct nonogram_t {
     int width;
@@ -42,8 +46,8 @@ std::ostream &operator<<(std::ostream &output, const nonogram_t &nonogram) {
                 output << nonogram.row_clues[h][rcs] << "\t";
         for (int w = 0; w < nonogram.width; w++) {
             auto &value = nonogram.board[h * nonogram.width + w];
-            output << ((value == 1) ? "███" :
-                       ((value == 0) ? "   " : "")) << "|";
+            output << ((value == 1) ? "███████" :
+                       ((value == 0) ? "       " : "")) << "|";
         }
         output << std::endl;
     }
@@ -99,17 +103,6 @@ double evaluate(const nonogram_t &nonogram) {
     return count_inconsistent(nonogram);
 }
 
-/*
-nonogram_t generate_nonogram(int size) {
-    nonogram_t nonogram;
-    while(evaluate(nonogram) != 0)
-        for (int i = 0; i < size*size; i++){
-            std::cout << i;
-        }
-    return nonogram;
-}
-*/
-
 bool next_solution(nonogram_t &nonogram) {
     int i = 0;
     for (; i < nonogram.board.size(); i++) {
@@ -142,7 +135,6 @@ std::vector<nonogram_t> generate_neighbours(const nonogram_t &nonogram) {
             auto new_board = nonogram;
             new_board.board[i] = 1 - new_board.board[i];
             neighbours.push_back(new_board);
-            //std::cout << new_board;
         }
     }
     return neighbours;
@@ -152,41 +144,84 @@ nonogram_t generate_neighbour(const nonogram_t &nonogram) {
     auto neighbour = nonogram;
     static std::random_device rd;
     static std::mt19937 rand(rd());
-    std::uniform_int_distribution<int> distribution(0, nonogram.board.size()-1);
+    std::uniform_int_distribution<int> distribution(0, nonogram.board.size() - 1);
     auto random_spot = distribution(rand);
-    if (neighbour.board[random_spot]== 0 ) neighbour.board[random_spot] = 1;
+    if (neighbour.board[random_spot] == 0) neighbour.board[random_spot] = 1;
     return neighbour;
 }
 
 nonogram_t generate_best_neighbour(const nonogram_t &nonogram) {
     auto best_neighbour = nonogram;
     for (const auto &neighbour: generate_neighbours(nonogram)) {
-        if (evaluate(best_neighbour) > evaluate(neighbour)){
+        if (evaluate(neighbour) <= evaluate(best_neighbour))
             best_neighbour = neighbour;
-        }
     }
     return best_neighbour;
 }
 
-nonogram_t hill_climb_deterministic (const nonogram_t& nonogram, int iterations) {
-    auto deterministic_result = generate_random_solution(nonogram);
-    std::cout << "Random Solution." << " Mistakes: " << evaluate(deterministic_result) << std::endl;
-    std::cout << deterministic_result;
-    while (true) {
+bool operator==(nonogram_t left, nonogram_t right) {
+    if ((left.width != right.width) || left.height != right.height) return false;
+    for (unsigned n = 0; n < right.board.size(); n++) {
+        if (left.board.at(n) != right.board.at(n)) return false;
+    }
+    return true;
+}
+
+nonogram_t tabu_method(const nonogram_t &nonogram, int iterations, int tabu_size) {
+    std::list<nonogram_t> tabu_list;
+    //tabu_list.push_back(generate_random_solution(nonogram));
+    tabu_list.push_back(nonogram);
+    auto result_tabu = tabu_list.back();
+    for (int n = 0; n < iterations; n++) {
+        if (evaluate(tabu_list.back()) == 0) {
+            std::cout << "Tabu Method found the solution at iteration:" << n << std::endl
+                      << result_tabu << "List Size: " << tabu_list.size() << std::endl;
+            return result_tabu;
+        }
+        std::vector<nonogram_t> neighbours;
+        for (const auto &element: generate_neighbours(tabu_list.back())) {
+            bool found = (std::find(tabu_list.begin(), tabu_list.end(), element) != tabu_list.end());
+            if (!found) neighbours.push_back(element);
+        }
+        if (neighbours.empty()) {
+            std::cerr << "Method got stuck at iteration: " << n << "\nBest Solution was: " <<
+                      evaluate(result_tabu) << "\n" << result_tabu << "List Size: " << tabu_list.size() << std::endl;
+        }
+        tabu_list.push_back(*std::min_element(neighbours.begin(), neighbours.end(),
+                                              [](auto left, auto right) {
+                                                  return evaluate(left) < evaluate(right);
+                                              }));
+        if (evaluate(tabu_list.back()) <= evaluate(result_tabu)) {
+            result_tabu = tabu_list.back();
+        }
+        if (tabu_list.size() > tabu_size) tabu_list.pop_front();
+    }
+    return result_tabu;
+}
+
+nonogram_t hill_climb_deterministic(const nonogram_t &nonogram, int iterations) {
+    //auto deterministic_result = generate_random_solution(nonogram);
+    //std::cout << "Random Solution." << " Mistakes: " << evaluate(deterministic_result) << std::endl;
+    //std::cout << deterministic_result;
+    auto deterministic_result = nonogram;
+    for (int n = 0; n < iterations; n++) {
         auto newResult = generate_best_neighbour(deterministic_result);
-        if (evaluate(newResult) == evaluate(deterministic_result)){
-            std::cout << "\nSolution after algorithm" << " Mistakes: " << evaluate(deterministic_result) << std::endl;
+        if (evaluate(newResult) == evaluate(deterministic_result)) {
+            std::cout << "\nSolution after algorithm" << " Mistakes: " << evaluate(deterministic_result) <<
+                      ". Iterations: " << n << std::endl;
             std::cout << deterministic_result;
             return deterministic_result;
         }
         deterministic_result = newResult;
     }
+    return deterministic_result;
 }
 
-nonogram_t hill_climb(const nonogram_t& nonogram, int iterations) {
-    auto result = generate_random_solution(nonogram);
-    std::cout << "Random Solution." << " Mistakes: " << evaluate(result) << std::endl;
-    std::cout << result;
+nonogram_t hill_climb(const nonogram_t &nonogram, int iterations) {
+    //auto result = generate_random_solution(nonogram);
+    //std::cout << "Random Solution." << " Mistakes: " << evaluate(result) << std::endl;
+    //std::cout << result;
+    auto result = nonogram;
     for (int i = 0; i < iterations; i++) {
         auto newResult = generate_neighbour(result);
         if (evaluate(newResult) <= evaluate(result))
@@ -197,120 +232,138 @@ nonogram_t hill_climb(const nonogram_t& nonogram, int iterations) {
     return result;
 }
 
-
-void brute_force(nonogram_t nonogram) {
+void brute_force(nonogram_t nonogram, int iterations) {
     auto start = std::chrono::high_resolution_clock::now();
-    int n = 0;
-    while (next_solution(nonogram)) {
-        /*
-        if ((n % 4096) == 0) {
-            std::cout << "Wrong board at ";
-            std::cout << n << " tries. Found " << evaluate(nonogram) << " mistakes in submitted Nonogram" << std::endl << nonogram << std::endl;
-        }
-         */
+    auto best = nonogram;
+    for (int n = 0; n < iterations; n++) {
+        next_solution(nonogram);
+        if (evaluate(nonogram) < evaluate(best)) best = nonogram;
         if (evaluate(nonogram) == 0) {
             auto stop = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
             std::cout << "Brute-Force found the right solution in " << n + 1 << " tries." << std::endl;
-            std::cout << "Brute-Force needed " << duration.count()/1e6 << " seconds." << std::endl;
+            std::cout << "Brute-Force needed " << duration.count() / 1e6 << " seconds." << std::endl;
             std::cout << nonogram << std::endl;
             break;
         }
-        n++;
     }
-};
+    std::cout << "Best solution (with given iterations) was with mistakes: " << evaluate(best) << std::endl;
+    std::cout << best << std::endl;
+}
 
-void random_solution(const nonogram_t &nonogram) {
+void random_solution(const nonogram_t &nonogram, int iterations) {
     auto start = std::chrono::high_resolution_clock::now();
-    auto rand = generate_random_solution(nonogram);
-    int n = 0;
-    while (evaluate(rand) != 0) {
-        /*
-        if ((n % 4096) == 0) {
-            std::cout << "Wrong board at " << n << " tries. Found " << std::endl;
-            std::cout << evaluate(nonogram) << " mistakes in submitted Nonogram\n" << rand << std::endl;
-        }
-        */
-        rand = generate_random_solution(nonogram);
+    auto best = generate_random_solution(nonogram);
+    for (int n = 0; n < iterations; n++) {
+        auto rand = generate_random_solution(nonogram);
+        if (evaluate(rand) < evaluate(best)) best = rand;
         if (evaluate(rand) == 0) {
             auto stop = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
             std::cout << "Random_Solution found the right solution in " << n + 1 << " tries." << std::endl;
-            std::cout << "Random solution generator needed " << duration.count()/1e6 << " seconds." << std::endl;
+            std::cout << "Random solution generator needed " << duration.count() / 1e6 << " seconds." << std::endl;
             std::cout << rand << std::endl;
             break;
         }
-        n++;
     }
+    std::cout << "Best solution (with given iterations) was with mistakes: " << evaluate(best) << std::endl;
+    std::cout << best << std::endl;
 }
-nonogram_t nonogram1 = {
-        5,
-        5,
-        {{1, 1, 1}, {0}, {0}, {0}, {0}},
-        {{1}, {0}, {1}, {0}, {1}},
-        {0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0}
-};
-nonogram_t nonogram2 = {
-        4,
-        4,
-        {{4}, {1, 1}, {1, 1}, {4}},
-        {{4}, {1, 1}, {1, 1}, {4}},
-        {0, 0, 0, 0,
-         0, 0, 0, 0,
-         0, 0, 0, 0,
-         0, 0, 0, 0}
-};
 
-nonogram_t nonogram3 = {
-        3,
-        3,
-        {{1}, {0}, {1,1}},
-        {{1,1}, {0}, {1}},
-        {0, 0, 0,
-         0, 0, 0,
-         0, 0, 0}
-};
+void task1(int h, int w, const std::string &text) {
+    if (text.length() <= w - 2) {
+        for (int x = 0; x < h; x++) {
+            if (x == 0 || x == h - 1) {
+                for (int i = 0; i < w; i++)
+                    std::cout << "█";
+                std::cout << std::endl;
+            } else if (x == (h / 2)) {
+                std::cout << "█";
+                for (int j = 0; j < ((w - text.size()) / 2) - 1; j++)
+                    std::cout << ' ';
+                std::cout << text;
+                for (int j = ((w - text.size()) / 2) + text.size() + 1; j < w; j++)
+                    std::cout << ' ';
+                std::cout << "█" << std::endl;
+            } else {
+                std::cout << "█";
+                for (int k = 1; k < w - 1; k++)
+                    std::cout << " ";
+                std::cout << "█" << std::endl;
+            }
+        }
+    } else
+        std::cout << "text is too big for the box" << std::endl;
+}
 
 int main(int argc, char **argv) {
-
-    //generate_nonogram(3);
     std::cout << "Welcome\n"
                  "To start the Program enter following:\n"
                  "1ST ARGUMENT = Function (b -> BruteForce, r -> Random-Solution, "
-                 "hd -> Hill Climb Deterministic, hc -> Hill Climb Randomized\n"
+                 "hd -> Hill Climb Deterministic, hr -> Hill Climb Randomized, tabu -> Tabu method\n"
+                 "Or if you want all functions: all -> all algorithms\n"
                  "2ND ARGUMENT = Iterations as an Integer\n"
-                 "3RD ARGUMENT = Size of the Nonogram Table\n"
-                 "4TH ARGUMENT = Column hints (numbers seperated by , columns by . )\n"
-                 "5th Argument = Row hints (numbers seperated by , rows by . )\n";
+                 "3RD ARGUMENT = nonogram.json (Edit with your own Nonogram)\n"
+                 "You can also choose a sample: nonogram*.json, where * is a number from 1 to 3\n"
+                 "4TH ARGUMENT = list of tabu size" << std::endl;
 
-    std::string  function = argv[1];
+    if (std::string(argv[1]) == "Samples/task1.json") {
+        std::ifstream file(argv[1]);
+        nlohmann::json data = nlohmann::json::parse(file);
+        std::string text = data["text"];
+        int h = data["h"];
+        int w = data["w"];
+        task1(h, w, text);
+        return 0;
+    }
 
+    std::string function = argv[1];
+    int iterations = atoi(argv[2]);
+    std::string file_name = argv[3];
+    int tabu_size = atoi(argv[4]);
+    std::ifstream file(file_name);
+    nlohmann::json data = nlohmann::json::parse(file);
 
-    const auto &nonogram = nonogram3;
-    int iterations = 500;
+    nonogram_t nonogram = {
+            data["w"],
+            data["h"],
+            data["column_clues"],
+            data["row_clues"],
+            data["board"]
+    };
 
     std::cout << "\n Nonogram to solve" << std::endl;
     std::cout << nonogram << std::endl;
 
-    std::cout << " ------------------------------" << std::endl;
-    std::cout << "Solving with Brute_Force Algorithm" << std::endl;
-    brute_force(nonogram);
+    if (function == "b" || function == "all") {
+        std::cout << " ------------------------------" << std::endl;
+        std::cout << "Brute_Force Algorithm" << std::endl;
+        brute_force(nonogram, iterations);
 
-    std::cout << " ------------------------------" << std::endl;
-    std::cout << "Solving with Random-Solution Algorithm" << std::endl;
-    random_solution(nonogram);
+    }
 
-    std::cout << " ------------------------------" << std::endl;
-    std::cout << "Hill Climb deterministic" << std::endl;
-    hill_climb_deterministic(nonogram,iterations);
+    if (function == "r" || function == "all") {
+        std::cout << " ------------------------------" << std::endl;
+        std::cout << "Random-Solution Algorithm" << std::endl;
+        random_solution(nonogram, iterations);
+    }
 
-    std::cout << " ------------------------------" << std::endl;
-    std::cout << "Hill Climb standard" << std::endl;
-    hill_climb(nonogram,iterations);
+    if (function == "hd" || function == "all") {
+        std::cout << " ------------------------------" << std::endl;
+        std::cout << "Hill Climb deterministic" << std::endl;
+        hill_climb_deterministic(nonogram, iterations);
+    }
 
+    if (function == "hr" || function == "all") {
+        std::cout << " ------------------------------" << std::endl;
+        std::cout << "Hill Climb randomized" << std::endl;
+        hill_climb(nonogram, iterations);
+    }
+
+    if (function == "tabu" || function == "all") {
+        std::cout << " ----------------------  --------" << std::endl;
+        std::cout << "Tabu Method" << std::endl;
+        tabu_method(nonogram, iterations, tabu_size);
+    }
     return 0;
 }
