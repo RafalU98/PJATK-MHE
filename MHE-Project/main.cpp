@@ -167,9 +167,9 @@ bool operator==(nonogram_t left, nonogram_t right) {
     return true;
 }
 
-nonogram_t tabu_method(const nonogram_t &nonogram, int iterations, int tabu_size) {
+nonogram_t tabu(const nonogram_t &nonogram, int iterations, int tabu_size, bool show_time, bool show_convergence_curve,
+                bool show_solution, bool show_quality, bool show_iterations, bool show_function_calls) {
     std::list<nonogram_t> tabu_list;
-    //tabu_list.push_back(generate_random_solution(nonogram));
     tabu_list.push_back(nonogram);
     auto result_tabu = tabu_list.back();
     for (int n = 0; n < iterations; n++) {
@@ -199,10 +199,9 @@ nonogram_t tabu_method(const nonogram_t &nonogram, int iterations, int tabu_size
     return result_tabu;
 }
 
-nonogram_t hill_climb_deterministic(const nonogram_t &nonogram, int iterations) {
-    //auto deterministic_result = generate_random_solution(nonogram);
-    //std::cout << "Random Solution." << " Mistakes: " << evaluate(deterministic_result) << std::endl;
-    //std::cout << deterministic_result;
+nonogram_t
+hill_climb_deterministic(const nonogram_t &nonogram, int iterations, bool show_time, bool show_convergence_curve,
+                         bool show_solution, bool show_quality, bool show_iterations, bool show_function_calls) {
     auto deterministic_result = nonogram;
     for (int n = 0; n < iterations; n++) {
         auto newResult = generate_best_neighbour(deterministic_result);
@@ -217,10 +216,8 @@ nonogram_t hill_climb_deterministic(const nonogram_t &nonogram, int iterations) 
     return deterministic_result;
 }
 
-nonogram_t hill_climb(const nonogram_t &nonogram, int iterations) {
-    //auto result = generate_random_solution(nonogram);
-    //std::cout << "Random Solution." << " Mistakes: " << evaluate(result) << std::endl;
-    //std::cout << result;
+nonogram_t hill_climb(const nonogram_t &nonogram, int iterations, bool show_time, bool show_convergence_curve,
+                      bool show_solution, bool show_quality, bool show_iterations, bool show_function_calls) {
     auto result = nonogram;
     for (int i = 0; i < iterations; i++) {
         auto newResult = generate_neighbour(result);
@@ -232,7 +229,8 @@ nonogram_t hill_climb(const nonogram_t &nonogram, int iterations) {
     return result;
 }
 
-void brute_force(nonogram_t nonogram, int iterations) {
+void brute_force(nonogram_t nonogram, int iterations, bool show_time, bool show_convergence_curve,
+                 bool show_solution, bool show_quality, bool show_iterations, bool show_function_calls) {
     auto start = std::chrono::high_resolution_clock::now();
     auto best = nonogram;
     for (int n = 0; n < iterations; n++) {
@@ -241,8 +239,6 @@ void brute_force(nonogram_t nonogram, int iterations) {
         if (evaluate(nonogram) == 0) {
             auto stop = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-            std::cout << "Brute-Force found the right solution in " << n + 1 << " tries." << std::endl;
-            std::cout << "Brute-Force needed " << duration.count() / 1e6 << " seconds." << std::endl;
             std::cout << nonogram << std::endl;
             break;
         }
@@ -251,23 +247,33 @@ void brute_force(nonogram_t nonogram, int iterations) {
     std::cout << best << std::endl;
 }
 
-void random_solution(const nonogram_t &nonogram, int iterations) {
+void random_solution(const nonogram_t &nonogram, int iterations, bool show_time, bool show_convergence_curve,
+                bool show_solution, bool show_quality, bool show_iterations, bool show_function_calls) {
+
     auto start = std::chrono::high_resolution_clock::now();
     auto best = generate_random_solution(nonogram);
+    int calls, found = 0;
+
     for (int n = 0; n < iterations; n++) {
         auto rand = generate_random_solution(nonogram);
-        if (evaluate(rand) < evaluate(best)) best = rand;
-        if (evaluate(rand) == 0) {
-            auto stop = std::chrono::high_resolution_clock::now();
-            auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-            std::cout << "Random_Solution found the right solution in " << n + 1 << " tries." << std::endl;
-            std::cout << "Random solution generator needed " << duration.count() / 1e6 << " seconds." << std::endl;
-            std::cout << rand << std::endl;
-            break;
+        if (evaluate(rand) < evaluate(best)) {
+            best = rand;
+            found = n;
         }
+        if (show_convergence_curve) std::cout << "Step: " << n << " Mistakes: " << evaluate(best) << std::endl;
+        if (evaluate(best) == 0) break;
+        calls++;
     }
-    std::cout << "Best solution (with given iterations) was with mistakes: " << evaluate(best) << std::endl;
-    std::cout << best << std::endl;
+
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+    std::cout << "Results for Random solution:" << std::endl;
+    if (show_time) std::cout << "Time: " << duration.count() / 1e6 << " seconds." << std::endl;
+    if (show_solution) std::cout << "Result:\n" << best;
+    if (show_quality) std::cout << "Mistakes: " << evaluate(best) << std::endl;
+    if (show_iterations) std::cout << "Iterations made: " << iterations << ". Best found at: " << found << std::endl;
+    if (show_function_calls) std::cout << "Function calls: " << calls << std::endl;
 }
 
 void task1(int h, int w, const std::string &text) {
@@ -296,6 +302,10 @@ void task1(int h, int w, const std::string &text) {
         std::cout << "text is too big for the box" << std::endl;
 }
 
+// TODO stats for rest of the functions
+//      edit description
+//      make code look good
+
 int main(int argc, char **argv) {
     std::cout << "Welcome\n"
                  "To start the Program enter following:\n"
@@ -305,7 +315,9 @@ int main(int argc, char **argv) {
                  "2ND ARGUMENT = Iterations as an Integer\n"
                  "3RD ARGUMENT = nonogram.json (Edit with your own Nonogram)\n"
                  "You can also choose a sample: nonogram*.json, where * is a number from 1 to 3\n"
-                 "4TH ARGUMENT = list of tabu size" << std::endl;
+                 "4TH ARGUMENT = list of tabu size\n"<< std::endl;
+
+
 
     if (std::string(argv[1]) == "Samples/task1.json") {
         std::ifstream file(argv[1]);
@@ -319,10 +331,20 @@ int main(int argc, char **argv) {
 
     std::string function = argv[1];
     int iterations = atoi(argv[2]);
+
     std::string file_name = argv[3];
-    int tabu_size = atoi(argv[4]);
     std::ifstream file(file_name);
     nlohmann::json data = nlohmann::json::parse(file);
+
+    int tabu_size = atoi(argv[4]);
+
+    bool show_time = argv[5];
+    bool show_convergence_curve = argv[6];
+    bool show_solution = argv[7];
+    bool show_quality = argv[8];
+    bool show_iterations = argv[9];
+    bool show_function_calls = argv[10];
+
 
     nonogram_t nonogram = {
             data["w"],
@@ -332,38 +354,53 @@ int main(int argc, char **argv) {
             data["board"]
     };
 
+    /*
+    nonogram_t nonogramSolution = {
+            data["solution_w"],
+            data["solution_h"],
+            data["solution_column_clues"],
+            data["solution_row_clues"],
+            data["solution_board"]
+    };
+     */
+
     std::cout << "\n Nonogram to solve" << std::endl;
     std::cout << nonogram << std::endl;
 
     if (function == "b" || function == "all") {
         std::cout << " ------------------------------" << std::endl;
         std::cout << "Brute_Force Algorithm" << std::endl;
-        brute_force(nonogram, iterations);
+        brute_force(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
+                    show_iterations, show_function_calls);
 
     }
 
     if (function == "r" || function == "all") {
         std::cout << " ------------------------------" << std::endl;
         std::cout << "Random-Solution Algorithm" << std::endl;
-        random_solution(nonogram, iterations);
+        random_solution(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
+                        show_iterations, show_function_calls);
     }
 
     if (function == "hd" || function == "all") {
         std::cout << " ------------------------------" << std::endl;
         std::cout << "Hill Climb deterministic" << std::endl;
-        hill_climb_deterministic(nonogram, iterations);
+        hill_climb_deterministic(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
+                                 show_iterations, show_function_calls);
     }
 
     if (function == "hr" || function == "all") {
         std::cout << " ------------------------------" << std::endl;
         std::cout << "Hill Climb randomized" << std::endl;
-        hill_climb(nonogram, iterations);
+        hill_climb(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
+                   show_iterations, show_function_calls);
     }
 
     if (function == "tabu" || function == "all") {
         std::cout << " ----------------------  --------" << std::endl;
         std::cout << "Tabu Method" << std::endl;
-        tabu_method(nonogram, iterations, tabu_size);
+        tabu(nonogram, iterations, tabu_size, show_time, show_convergence_curve, show_solution, show_quality,
+             show_iterations, show_function_calls);
     }
     return 0;
 }
