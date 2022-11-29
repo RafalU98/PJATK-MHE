@@ -19,6 +19,26 @@ Nonogram also known as Paint by numbers is a logical puzzle which consist of a g
               2 2| | | | | | | | | |              2 2| |X|X| | | |X|X| |
                 0| | | | | | | | | |                0| | | | | | | | | |
                    
+### TUTORIAL
+        To start the Program enter following:
+
+        1ST ARGUMENT = Function (b -> BruteForce, r -> Random-Solution, hd -> Hill Climb Deterministic, hr -> Hill Climb Randomized, tabu -> Tabu method
+        Or if you want all functions: all -> all algorithms
+
+        2ND ARGUMENT = Iterations as an Integer
+        3RD ARGUMENT = nonogram.json (Edit with your own Nonogram). You can also choose a sample: nonogram*.json, where * is a number from 1 to 3
+        4TH ARGUMENT = list of tabu size
+
+        5TH ARGUMENT = 1 if you want to see the time, that the function needed. 0 if not
+        6TH ARGUMENT = 1 if you want to see the convergence curve of the function. 0 if not
+        7TH ARGUMENT = 1 if you want to see the solution of the function. 0 if not
+        8TH ARGUMENT = 1 if you want to see the quality or mistakes of the result. 0 if not
+        9TH ARGUMENT = 1 if you want to see the total iterations of the function. 0 if not
+        10TH ARGUMENT = 1 if you want to see how many times the quality got better. 0 if not
+        11TH ARGUMENT = 1 if you want to see the solution nonogram. . 0 if not
+                   
+                   
+                   
         
 ### Task 1 - Lab 03/10/2022
          Small introdction before starting the "real project"
