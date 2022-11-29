@@ -1,0 +1,5 @@
+#include "../Header_Files/nonogram_help_functions.h"
+#include "../Header_Files/nonogram_functions.h"
+#include "../Header_Files/nonogram_algorithms.h"
+#include "../Header_Files/task1.h"
+#include "../Header_Files/json.hpp"

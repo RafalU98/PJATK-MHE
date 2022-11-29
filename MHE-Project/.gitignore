@@ -5,7 +5,7 @@ Testing
 cmake_install.cmake
 CMakeCache.txt
 Makefile
-MHE_Project
+Source_Files/MHE_Project
 MHE_Project.cbp
 COPY
 
