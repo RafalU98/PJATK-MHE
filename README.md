@@ -22,11 +22,13 @@ Nonogram also known as Paint by numbers is a logical puzzle which consist of a g
 ### TUTORIAL
         To start the Program enter following:
 
-        1ST ARGUMENT = Function (b -> BruteForce, r -> Random-Solution, hd -> Hill Climb Deterministic, hr -> Hill Climb Randomized, tabu -> Tabu method
-        Or if you want all functions: all -> all algorithms
+        1ST ARGUMENT = Function (b -> BruteForce, r -> Random-Solution, hd -> Hill Climb Deterministic, hr -> Hill Climb Randomized,
+        tabu -> Tabu method Or if you want all functions: all -> all algorithms
 
         2ND ARGUMENT = Iterations as an Integer
-        3RD ARGUMENT = nonogram.json (Edit with your own Nonogram). You can also choose a sample: nonogram*.json, where * is a number from 1 to 3
+        3RD ARGUMENT = nonogram.json (Edit with your own Nonogram). 
+        You can also choose a sample: nonogram*.json, where * is a number from 1 to 3
+        
         4TH ARGUMENT = list of tabu size
 
         5TH ARGUMENT = 1 if you want to see the time, that the function needed. 0 if not
@@ -36,34 +38,12 @@ Nonogram also known as Paint by numbers is a logical puzzle which consist of a g
         9TH ARGUMENT = 1 if you want to see the total iterations of the function. 0 if not
         10TH ARGUMENT = 1 if you want to see how many times the quality got better. 0 if not
         11TH ARGUMENT = 1 if you want to see the solution nonogram. . 0 if not
-                   
-                   
-                   
-        
-### Task 1 - Lab 03/10/2022
-         Small introdction before starting the "real project"
-         
-         NAME
-    task1 - displaying the text in a frame according to the configuration in a JSON file
-        SYNTAX
-    job1 FILENAME
-        DESCRIPTION
-    The program loads the configuration from the FILENAME file in which it is described
-    the size of the frame and the text to be placed inside. The frame will be text with dimensions w to h
-    with text vertically and horizontally centered.
-    
-    The configuration file has the following format:
-       {"w": WIDTH FRAMES, "h": FRAMES, "text": FRAME TEXT}
-        EXAMPLE
-    task1 config.json
 
-
-### Task 2 - Lab 10/10/2022
-        Implement the data structures for the task.
- 
-        You need a task structure to be solved. In the case of a traveling salesman, 
-        it will be a set of cities with distances between cities (or a measure of distance function).
- 
-        You need a solution structure. In the case of a traveling salesman, 
-        this will be a list that sets the order of the cities to visit.
+### Changelog
+        03.10.22 - 09.10.22 |   Added Task 1 (learning how to use json.hpp)
+        10.10.22 - 23.10.22 |   Added Task 2 (added classes to display nonogram)
+        24.10.22 - 06.11.22 |   Added Task 3 (evaluation function + brute_force algoritm)
+        07.11.22 - 20.11.22 |   Added Task 4 (random/hill_climb/hill_climb_deter algoritms were added)
+        21.11.22 - 27.11.22 |   Added Task 5 (tabu algoritm)
+        28.11.22 - 03.12.22 |   Added Task 6 (added structure for experiments + splitted program into different modules)
 
