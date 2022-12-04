@@ -100,6 +100,13 @@ int main(int argc, char **argv) {
              show_iterations, show_function_calls);
     }
 
+    if (function == "sim" || function == "all") {
+        std::cout << " ---------------------- --------" << std::endl;
+        std::cout << "Simulated annealing" << std::endl;
+        sim_ann(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
+             show_iterations, show_function_calls);
+    }
+
     if(solution_nonogram == 1){
         std::cout << "This was the Nonogram we were looking for:\n" << nonogramSolution ;
     }

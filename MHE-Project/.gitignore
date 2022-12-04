@@ -8,4 +8,5 @@ Makefile
 Source_Files/MHE_Project
 MHE_Project.cbp
 COPY
-
+*.txt
+TEXT Files

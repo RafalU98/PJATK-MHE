@@ -9,6 +9,7 @@ bool next_solution(nonogram_t &nonogram);
 nonogram_t generate_random_solution(const nonogram_t &nonogram);
 std::vector<nonogram_t> generate_neighbours(const nonogram_t &nonogram);
 nonogram_t generate_neighbour(const nonogram_t &nonogram);
+nonogram_t generate_neighbour_almost_normal(const nonogram_t &nonogram);
 nonogram_t generate_best_neighbour(const nonogram_t &nonogram);
 bool operator==(nonogram_t left, nonogram_t right);
 

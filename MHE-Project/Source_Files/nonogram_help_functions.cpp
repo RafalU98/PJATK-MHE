@@ -85,6 +85,21 @@ std::vector<nonogram_t> generate_neighbours(const nonogram_t &nonogram) {
     return neighbours;
 }
 
+nonogram_t generate_neighbour_almost_normal(const nonogram_t &nonogram) {
+    static std::random_device rd;
+    static std::mt19937 rand(rd());
+    std::vector<nonogram_t> neighbours;
+    std::normal_distribution normalDistribution;
+    std::uniform_int_distribution<int> intDistribution(0,nonogram.board.size()-1);
+    double how_may_change = normalDistribution(rand);
+    auto new_board = nonogram;
+    for (int i = 0; i < how_may_change; i++) {
+        int n = intDistribution(rand);
+        if ( new_board.board[n] <= 0 ) new_board.board[n] = 1 - new_board.board[n];
+    }
+    return new_board;
+}
+
 nonogram_t generate_neighbour(const nonogram_t &nonogram) {
     auto neighbour = nonogram;
     static std::random_device rd;
