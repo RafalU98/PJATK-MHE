@@ -4,7 +4,7 @@ int main(int argc, char **argv) {
     std::cout << "Welcome\n"
                  "To start the Program enter following:\n"
                  "1ST ARGUMENT = Function (b -> BruteForce, r -> Random-Solution, "
-                 "hd -> Hill Climb Deterministic, hr -> Hill Climb Randomized, tabu -> Tabu method\n"
+                 "hd -> Hill Climb Deterministic, hr -> Hill Climb Randomized, tabu -> Tabu method, sim -> Simulated Annealing\n"
                  "Or if you want all functions: all -> all algorithms\n"
                  "2ND ARGUMENT = Iterations as an Integer\n"
                  "3RD ARGUMENT = nonogram.json (Edit with your own Nonogram)\n"
@@ -104,11 +104,11 @@ int main(int argc, char **argv) {
         std::cout << " ---------------------- --------" << std::endl;
         std::cout << "Simulated annealing" << std::endl;
         sim_ann(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
-             show_iterations, show_function_calls);
+                show_iterations, show_function_calls);
     }
 
-    if(solution_nonogram == 1){
-        std::cout << "This was the Nonogram we were looking for:\n" << nonogramSolution ;
+    if (solution_nonogram == 1) {
+        std::cout << "This was the Nonogram we were looking for:\n" << nonogramSolution;
     }
 
     return 0;

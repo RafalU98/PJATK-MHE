@@ -4,7 +4,8 @@ nonogram_t sim_ann(const nonogram_t &nonogram, int iterations, bool show_time, b
                    bool show_solution, bool show_quality, bool show_iterations, bool show_function_calls,
                    std::function<double(int)> T) {
     auto start = std::chrono::high_resolution_clock::now();
-    auto s = generate_neighbour(nonogram);
+    auto s = generate_random_solution(nonogram);
+    //auto s = generate_neighbour(nonogram);
     auto best = s;
     int calls = 0, found = 0, iter = 0;
     static std::random_device rd;
@@ -15,10 +16,12 @@ nonogram_t sim_ann(const nonogram_t &nonogram, int iterations, bool show_time, b
         auto t = generate_neighbour_almost_normal(best);
         if (evaluate(t) < evaluate(s)) {
             s = t;
+            calls++;
             if (evaluate(s) < evaluate(best)) {
                 best = s;
                 found = n;
             }
+            if (evaluate(best) == 0) break;
         } else {
             std::uniform_real_distribution<double> distribution(0.0, 1.0);
             double v = std::exp(-std::abs(evaluate(t)) / T(n));
@@ -31,7 +34,7 @@ nonogram_t sim_ann(const nonogram_t &nonogram, int iterations, bool show_time, b
             auto currentDuration = std::chrono::duration_cast<std::chrono::microseconds>(time - start);
             //std::cout << n << " " << evaluate(t) << " " << currentDuration.count() / 1e6 << std::endl;
             std::cout << "Step: " << n << " Mistakes: " << evaluate(t) << " Time Passed: " <<
-                      currentDuration.count() / 1e6 << std::endl;
+                      currentDuration.count() / 1e6  << "\n" << t << std::endl;
         }
     }
     auto stop = std::chrono::high_resolution_clock::now();
@@ -51,8 +54,9 @@ nonogram_t tabu(const nonogram_t &nonogram, int iterations, int tabu_size, bool 
 
     auto start = std::chrono::high_resolution_clock::now();
     int calls = 0, found = 0, iter = 0;
+
     std::list<nonogram_t> tabu_list;
-    tabu_list.push_back(nonogram);
+    tabu_list.push_back(generate_random_solution(nonogram));
     auto best = tabu_list.back();
 
     for (int n = 0; n < iterations; n++) {
@@ -68,6 +72,7 @@ nonogram_t tabu(const nonogram_t &nonogram, int iterations, int tabu_size, bool 
         if (neighbours.empty()) {
             std::cerr << "Method got stuck at iteration: " << n << "\nBest Solution was: " <<
                       evaluate(best) << "\n" << best << "List Size: " << tabu_list.size() << std::endl;
+            return best;
         }
         tabu_list.push_back(*std::min_element(neighbours.begin(), neighbours.end(),
                                               [](auto left, auto right) {
@@ -84,7 +89,7 @@ nonogram_t tabu(const nonogram_t &nonogram, int iterations, int tabu_size, bool 
             auto currentDuration = std::chrono::duration_cast<std::chrono::microseconds>(time - start);
             //std::cout << n << " " << evaluate(tabu_list.back()) << " " << currentDuration.count() / 1e6 << std::endl;
             std::cout << "Step: " << n << " Mistakes: " << evaluate(tabu_list.back()) << " Time Passed: " <<
-                      currentDuration.count() / 1e6 << std::endl;
+                      currentDuration.count() / 1e6 << "\n" << tabu_list.back() <<  std::endl;
         }
     }
 
@@ -94,7 +99,7 @@ nonogram_t tabu(const nonogram_t &nonogram, int iterations, int tabu_size, bool 
     if (show_time) std::cout << "Time: " << duration.count() / 1e6 << " seconds." << std::endl;
     if (show_solution) std::cout << "Result:\n" << best;
     if (show_quality) std::cout << "Mistakes: " << evaluate(best) << std::endl;
-    if (show_iterations) std::cout << "Iterations made: " << iter << ". BEarliest Best found at: " << found << std::endl;
+    if (show_iterations) std::cout << "Iterations made: " << iter << ". Earliest Best found at: " << found << std::endl;
     if (show_function_calls) std::cout << "Evaluation Function calls: " << calls << std::endl;
 
     return best;
@@ -110,10 +115,13 @@ nonogram_t hill_climb_det(const nonogram_t &nonogram, int iterations, bool show_
     for (int n = 0; n < iterations; n++) {
         iter++;
         auto newResult = generate_best_neighbour(best);
-        if (evaluate(newResult) <= evaluate(best)) {
+        if (evaluate(newResult) < evaluate(best)) {
             best = newResult;
             calls++;
             found = n;
+        }
+        if (evaluate(best) == 0) {
+            break;
         }
         if (show_convergence_curve) {
             auto time = std::chrono::high_resolution_clock::now();

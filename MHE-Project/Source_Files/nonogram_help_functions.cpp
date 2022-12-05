@@ -76,7 +76,7 @@ nonogram_t generate_random_solution(const nonogram_t &nonogram) {
 std::vector<nonogram_t> generate_neighbours(const nonogram_t &nonogram) {
     std::vector<nonogram_t> neighbours;
     for (int i = 0; i < nonogram.board.size(); i++) {
-        if (nonogram.board[i] <= 0) {
+        if (nonogram.board[i] >= 0) {
             auto new_board = nonogram;
             new_board.board[i] = 1 - new_board.board[i];
             neighbours.push_back(new_board);
