@@ -45,7 +45,6 @@ int main(int argc, char **argv) {
     int show_function_calls = atoi(argv[10]);
     int solution_nonogram = atoi(argv[11]);
 
-
     nonogram_t nonogram = {
             data["w"],
             data["h"],
@@ -106,6 +105,19 @@ int main(int argc, char **argv) {
         sim_ann(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
                 show_iterations, show_function_calls);
     }
+
+    if (function == "ga" || function == "all") {
+        std::cout << " ---------------------- --------" << std::endl;
+        std::cout << "Genetic Algorithm" << std::endl;
+
+        int population_size = 10;
+        double crossover_probability = 0.1;
+        double mutation_probability = 0.01;
+        gen_alg(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
+                show_iterations, show_function_calls, population_size, crossover_probability,
+                mutation_probability,nonogramSolution);
+    }
+
 
     if (solution_nonogram == 1) {
         std::cout << "This was the Nonogram we were looking for:\n" << nonogramSolution;

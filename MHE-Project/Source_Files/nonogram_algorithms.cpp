@@ -54,9 +54,9 @@ nonogram_t tabu(const nonogram_t &nonogram, int iterations, int tabu_size, bool 
 
     auto start = std::chrono::high_resolution_clock::now();
     int calls = 0, found = 0, iter = 0;
-
     std::list<nonogram_t> tabu_list;
-    tabu_list.push_back(generate_random_solution(nonogram));
+    tabu_list.push_back(nonogram);
+    //tabu_list.push_back(generate_random_solution(nonogram));
     auto best = tabu_list.back();
 
     for (int n = 0; n < iterations; n++) {
@@ -89,7 +89,7 @@ nonogram_t tabu(const nonogram_t &nonogram, int iterations, int tabu_size, bool 
             auto currentDuration = std::chrono::duration_cast<std::chrono::microseconds>(time - start);
             //std::cout << n << " " << evaluate(tabu_list.back()) << " " << currentDuration.count() / 1e6 << std::endl;
             std::cout << "Step: " << n << " Mistakes: " << evaluate(tabu_list.back()) << " Time Passed: " <<
-                      currentDuration.count() / 1e6 << "\n" << tabu_list.back() <<  std::endl;
+                      currentDuration.count() / 1e6 <<  std::endl;
         }
     }
 
