@@ -23,7 +23,6 @@ int count_inconsistent(const nonogram_t &nonogram) {
         if (set != nonogram.row_clues[y]) mistakes++;
     }
 
-
     //Count wrong submitted Columns
     for (int x = 0; x < nonogram.width; x++) {
         std::vector<int> set = {};

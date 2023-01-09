@@ -4,13 +4,21 @@ std::random_device rd;
 std::mt19937 ga_random(rd());
 
 double fitness(const nonogram_t &nonogram, nonogram_t &solution) {
+/*
     int mistakes = 0;
     for (int i = 0; i < solution.board.size(); i++) {
         if (nonogram.board[i] != solution.board[i]) {
             mistakes++;
         }
     }
-    return mistakes;
+    */
+    int mistakes = 0;
+    mistakes = evaluate(nonogram);
+    if (mistakes == 0){
+        return 0;
+    }
+    return 1.0/ (1.0*mistakes);
+
 }
 
 std::vector<int> selection(const std::vector<double> &population_fitnesses) {
@@ -18,7 +26,7 @@ std::vector<int> selection(const std::vector<double> &population_fitnesses) {
     std::vector<int> selection_return;
     while (selection_return.size() < population_fitnesses.size()) {
         int a = distribution(ga_random), b = distribution(ga_random);
-        selection_return.push_back((population_fitnesses[a] < population_fitnesses[b]) ? a : b);
+        selection_return.push_back((population_fitnesses[a] > population_fitnesses[b]) ? a : b);
     }
     return selection_return;
 }
@@ -26,9 +34,49 @@ std::vector<int> selection(const std::vector<double> &population_fitnesses) {
 std::vector<nonogram_t> crossover(const std::vector<nonogram_t> current_pair) {
     std::vector<nonogram_t> offspring = current_pair;
     std::uniform_int_distribution<int> distribution(0, current_pair[0].board.size() - 1);
+    std::uniform_int_distribution<int> distribution2(0, 1);
     int split = distribution(ga_random);
-    for (int i = 0; i < split; i++) {
+    int which = distribution2(ga_random);
+    if (which == 0) {
+        for (int i = 0; i < split; i++) {
+            std::swap(offspring[0].board[i], offspring[1].board[i]);
+        }
+    } else {
+        for (int i = split; i < offspring[0].board.size(); i++) {
+            std::swap(offspring[0].board[i], offspring[1].board[i]);
+        }
+    }
+    return offspring;
+}
+
+std::vector<nonogram_t> crossover2(const std::vector<nonogram_t> current_pair) {
+    std::vector<nonogram_t> offspring = current_pair;
+    std::uniform_int_distribution<int> distribution(0, current_pair[0].board.size() - 1);
+    std::uniform_int_distribution<int> distribution2(0, 1);
+    int split1 = distribution(ga_random);
+    int split2 = distribution(ga_random);
+    if (split1 == split2) return current_pair;
+    if (split1 > split2) std::swap(split1,split2);
+    std::array<int, 2> splits = {split1,split2};
+
+    std::map<int ,int> taken[2];
+
+    for (int i = splits[0]; i < splits[1];i++){
         std::swap(offspring[0].board[i], offspring[1].board[i]);
+        taken[0][(offspring[0].board[i])] = offspring[1].board[i];
+        taken[1][(offspring[1].board[i])] = offspring[0].board[i];
+    }
+
+    for(int v=0;v<2;v++){
+        for(int i=0;i<current_pair[0].board.size();i++){
+            if (i==splits[0]){
+                i = splits[1] -1;
+                continue;
+            }
+            while (taken[v].count((offspring[v].board[i]))) {
+                offspring[v].board[i] = taken[v].at(offspring[v].board[i]);
+            }
+        }
     }
     return offspring;
 }
@@ -65,7 +113,6 @@ nonogram_t gen_alg(const nonogram_t &nonogram, int iterations, bool show_time, b
     if (show_convergence_curve) print_population(population, solution_nonogram);
     std::cout << std::endl;
     for (int n = 0; n < iterations; n++) {
-        iter++;
         std::vector<double> fitnesses(population_size);
         std::transform(population.begin(), population.end(), fitnesses.begin(),
                        [&](auto e) { return fitness(e, solution_nonogram); });
@@ -87,11 +134,6 @@ nonogram_t gen_alg(const nonogram_t &nonogram, int iterations, bool show_time, b
         }
         population = new_gen;
 
-        if (fitness(best, solution_nonogram) > fitness(population[0], solution_nonogram)) {
-            calls = calls++;
-            found = n;
-            best = population[0];
-        }
         if (show_convergence_curve) {
             auto time = std::chrono::high_resolution_clock::now();
             auto currentDuration = std::chrono::duration_cast<std::chrono::microseconds>(time - start);
@@ -99,7 +141,14 @@ nonogram_t gen_alg(const nonogram_t &nonogram, int iterations, bool show_time, b
             print_population(population, solution_nonogram);
             std::cout << std::endl;
         }
-        if (fitness(best, solution_nonogram) == 0) break;
+        if (fitness(population[0], solution_nonogram) > fitness(best, solution_nonogram)) {
+            calls++;
+            found = n;
+            best = population[0];
+            std::cout <<best;
+            if (fitness(best, solution_nonogram) == 0) break;
+        }
+        iter++;
     }
 
     auto stop = std::chrono::high_resolution_clock::now();

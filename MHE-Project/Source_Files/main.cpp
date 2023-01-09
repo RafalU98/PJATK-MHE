@@ -110,14 +110,13 @@ int main(int argc, char **argv) {
         std::cout << " ---------------------- --------" << std::endl;
         std::cout << "Genetic Algorithm" << std::endl;
 
-        int population_size = 10;
+        int population_size = 1000;
         double crossover_probability = 0.1;
         double mutation_probability = 0.01;
         gen_alg(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
                 show_iterations, show_function_calls, population_size, crossover_probability,
                 mutation_probability,nonogramSolution);
     }
-
 
     if (solution_nonogram == 1) {
         std::cout << "This was the Nonogram we were looking for:\n" << nonogramSolution;
