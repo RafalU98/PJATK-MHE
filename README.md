@@ -46,4 +46,7 @@ Nonogram also known as Paint by numbers is a logical puzzle which consist of a g
         07.11.22 - 20.11.22 |   Added Task 4 (random/hill_climb/hill_climb_deter algoritms were added)
         21.11.22 - 27.11.22 |   Added Task 5 (tabu algoritm)
         28.11.22 - 03.12.22 |   Added Task 6 (added structure for experiments + splitted program into different modules)
+        04.12.22 - 10.12.22 |   Added Task 7 (simmulated algortim)
+        11.12.22 - 08.01.23 |   Added Task 8 (genetic algoritm)
+        
 
