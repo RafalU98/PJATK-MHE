@@ -1,4 +1,5 @@
 #include "../Header_Files/nonogram_help_functions.h"
+
 /* The function is iterating first through the elements in rows and then through the elements in columns at the board
  * to check if submitted answer == solution, the returned number describes the value of "Wrong rows + Wrong columns"
  *
@@ -21,7 +22,20 @@ int count_inconsistent(const nonogram_t &nonogram) {
         }
         if (set.empty()) set.push_back(0);
         if (set != nonogram.row_clues[y]) mistakes++;
+
+        //add mistake if size of "clues" is wrong
+        if (set.size() != nonogram.row_clues[y].size())
+            mistakes += (int) set.size() - abs((int) set.size() - nonogram.row_clues[y].size());
+
+        //matching sum
+        int sumSetForRow = 0, sumRow = 0;
+        for(int i = 0; i < set.size();i++) {
+            sumSetForRow += set[i];
+            sumRow += nonogram.row_clues[y][i];
+        }
+        mistakes += abs(sumSetForRow - sumRow);
     }
+
 
     //Count wrong submitted Columns
     for (int x = 0; x < nonogram.width; x++) {
@@ -38,8 +52,19 @@ int count_inconsistent(const nonogram_t &nonogram) {
         }
         if (set.empty()) set.push_back(0);
         if (set != nonogram.column_clues[x]) mistakes++;
-    }
 
+        //add mistake if size of "clues" is wrong
+        if (set.size() != nonogram.column_clues[x].size())
+            mistakes += (int) set.size() - abs((int) set.size() - nonogram.column_clues[x].size());
+
+        //matching sum
+        int sumSetForColumn = 0, sumColumn = 0;
+        for(int i = 0; i < set.size();i++) {
+            sumSetForColumn += set[i];
+            sumColumn += nonogram.column_clues[x][i];
+        }
+        mistakes += abs(sumSetForColumn - sumColumn);
+    }
     return mistakes;
 }
 
@@ -89,12 +114,12 @@ nonogram_t generate_neighbour_almost_normal(const nonogram_t &nonogram) {
     static std::mt19937 rand(rd());
     std::vector<nonogram_t> neighbours;
     std::normal_distribution normalDistribution;
-    std::uniform_int_distribution<int> intDistribution(0,nonogram.board.size()-1);
+    std::uniform_int_distribution<int> intDistribution(0, nonogram.board.size() - 1);
     double how_may_change = normalDistribution(rand);
     auto new_board = nonogram;
     for (int i = 0; i < how_may_change; i++) {
         int n = intDistribution(rand);
-        if ( new_board.board[n] <= 0 ) new_board.board[n] = 1 - new_board.board[n];
+        if (new_board.board[n] <= 0) new_board.board[n] = 1 - new_board.board[n];
     }
     return new_board;
 }

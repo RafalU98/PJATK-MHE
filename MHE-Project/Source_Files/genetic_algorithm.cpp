@@ -3,22 +3,8 @@
 std::random_device rd;
 std::mt19937 ga_random(rd());
 
-double fitness(const nonogram_t &nonogram, nonogram_t &solution) {
-/*
-    int mistakes = 0;
-    for (int i = 0; i < solution.board.size(); i++) {
-        if (nonogram.board[i] != solution.board[i]) {
-            mistakes++;
-        }
-    }
-    */
-    int mistakes = 0;
-    mistakes = evaluate(nonogram);
-    if (mistakes == 0){
-        return 0;
-    }
-    return 1.0/ (1.0*mistakes);
-
+double fitness(const nonogram_t &nonogram) {
+    return 1.0/ (1.0 + evaluate(nonogram));
 }
 
 std::vector<int> selection(const std::vector<double> &population_fitnesses) {
@@ -89,15 +75,14 @@ nonogram_t mutation(nonogram_t &nonogram) {
     return mutant;
 }
 
-auto print_population = [](auto results, nonogram_t &solution) {
+auto print_population = [](auto results) {
     for (auto e: results)
-        std::cout << fitness(e, solution) << " | ";
+        std::cout << fitness(e) << " | ";
 };
 
 nonogram_t gen_alg(const nonogram_t &nonogram, int iterations, bool show_time, bool show_convergence_curve,
                    bool show_solution, bool show_quality, bool show_iterations, bool show_function_calls,
-                   int population_size, double crossover_probability, double mutation_probability,
-                   nonogram_t &solution_nonogram) {
+                   int population_size, double crossover_probability, double mutation_probability) {
 
     auto start = std::chrono::high_resolution_clock::now();
     int calls = 0, found = 0, iter = 0;
@@ -107,15 +92,18 @@ nonogram_t gen_alg(const nonogram_t &nonogram, int iterations, bool show_time, b
     });
     std::vector<nonogram_t> population = initial_population;
     std::sort(population.begin(), population.end(), [&](auto a, auto b) {
-        return fitness(a, solution_nonogram) < fitness(b, solution_nonogram);
+        return fitness(a) < fitness(b);
     });
     auto best = population[0];
-    if (show_convergence_curve) print_population(population, solution_nonogram);
+    if (show_convergence_curve) print_population(population);
     std::cout << std::endl;
     for (int n = 0; n < iterations; n++) {
         std::vector<double> fitnesses(population_size);
+        for (int i = 0; i < population_size; i++){
+            fitnesses[i] = fitness(population[i]);
+        }
         std::transform(population.begin(), population.end(), fitnesses.begin(),
-                       [&](auto e) { return fitness(e, solution_nonogram); });
+                       [&](auto e) { return fitness(e); });
         auto selected = selection(fitnesses);
         std::vector<nonogram_t> new_gen;
         for (int i = 0; i < (population_size - 1); i += 2) {
@@ -137,26 +125,32 @@ nonogram_t gen_alg(const nonogram_t &nonogram, int iterations, bool show_time, b
         if (show_convergence_curve) {
             auto time = std::chrono::high_resolution_clock::now();
             auto currentDuration = std::chrono::duration_cast<std::chrono::microseconds>(time - start);
-            std::cout << "Step: " << n << " Time Passed: " << currentDuration.count() / 1e6 << " Population: ";
-            print_population(population, solution_nonogram);
+            std::cout << "Step: " << n << " Time Passed: " << currentDuration.count() / 1e6;
+            //print_population(population);
             std::cout << std::endl;
         }
-        if (fitness(population[0], solution_nonogram) > fitness(best, solution_nonogram)) {
+        if (fitness(population[0]) > fitness(best)) {
             calls++;
             found = n;
             best = population[0];
-            std::cout <<best;
-            if (fitness(best, solution_nonogram) == 0) break;
+            std::cout << best;
+            std::cout << "Fitness: " << fitness(best);
+            auto time = std::chrono::high_resolution_clock::now();
+            auto currentDuration = std::chrono::duration_cast<std::chrono::microseconds>(time - start);
+            std::cout << " | Step: " << n << " | Time Passed: " << currentDuration.count() / 1e6 << std::endl;
+            std::cout << "-----------------------------------------------------------------------\n";
+            if (fitness(best) == 1) break;
         }
         iter++;
     }
 
-    auto stop = std::chrono::high_resolution_clock::now();
+    auto stop = std::chrono::high_resolution_clock::now
+            ();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
 
     if (show_time) std::cout << "Time: " << duration.count() / 1e6 << " seconds." << std::endl;
     if (show_solution) std::cout << "Result:\n" << best;
-    if (show_quality) std::cout << "Mistakes: " << fitness(best, solution_nonogram) << std::endl;
+    if (show_quality) std::cout << "Mistakes: " << fitness(best) << std::endl;
     if (show_iterations) std::cout << "Iterations made: " << iter << ". Earliest Best found at: " << found << std::endl;
     if (show_function_calls) std::cout << "Evaluation Function calls: " << calls << std::endl;
 

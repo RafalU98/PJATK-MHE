@@ -111,11 +111,11 @@ int main(int argc, char **argv) {
         std::cout << "Genetic Algorithm" << std::endl;
 
         int population_size = 1000;
-        double crossover_probability = 0.1;
-        double mutation_probability = 0.01;
+        double crossover_probability = 0.2;
+        double mutation_probability = 0.02;
         gen_alg(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
                 show_iterations, show_function_calls, population_size, crossover_probability,
-                mutation_probability,nonogramSolution);
+                mutation_probability);
     }
 
     if (solution_nonogram == 1) {
