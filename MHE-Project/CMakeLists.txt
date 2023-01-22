@@ -11,4 +11,7 @@ add_executable(MHE Source_Files/main.cpp
         Source_Files/nonogram_help_functions.cpp
         Header_Files/nonogram_help_functions.h
         Source_Files/task1.cpp
-        Header_Files/task1.h Source_Files/genetic_algorithm.cpp)
+        Header_Files/task1.h
+        Source_Files/genetic_algorithm.cpp
+        Source_Files/nonogram_creator.cpp
+        )

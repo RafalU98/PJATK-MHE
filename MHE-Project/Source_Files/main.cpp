@@ -1,7 +1,7 @@
 #include "../Header_Files/libraries.h"
 
 int main(int argc, char **argv) {
-    std::cout << "Welcome\n"
+    //std::cout << "Welcome\n"
                  "To start the Program enter following:\n"
                  "1ST ARGUMENT = Function (b -> BruteForce, r -> Random-Solution, "
                  "hd -> Hill Climb Deterministic, hr -> Hill Climb Randomized, tabu -> Tabu method, sim -> Simulated Annealing\n"
@@ -44,6 +44,8 @@ int main(int argc, char **argv) {
     int show_iterations = atoi(argv[9]);
     int show_function_calls = atoi(argv[10]);
     int solution_nonogram = atoi(argv[11]);
+    int width_random = atoi(argv[12]);
+    int height_random = atoi(argv[13]);
 
     nonogram_t nonogram = {
             data["w"],
@@ -61,8 +63,8 @@ int main(int argc, char **argv) {
             data["solution_board"]
     };
 
-    std::cout << "\n Nonogram to solve" << std::endl;
-    std::cout << nonogram << std::endl;
+    //std::cout << "\n Nonogram to solve" << std::endl;
+    //std::cout << nonogram << std::endl;
 
     if (function == "b" || function == "all") {
         std::cout << " ------------------------------" << std::endl;
@@ -110,17 +112,22 @@ int main(int argc, char **argv) {
         std::cout << " ---------------------- --------" << std::endl;
         std::cout << "Genetic Algorithm" << std::endl;
 
-        int population_size = 1000;
-        double crossover_probability = 0.2;
-        double mutation_probability = 0.02;
+        int population_size = 100;
+        double crossover_probability = 0.1;
+        double mutation_probability = 0.01;
         gen_alg(nonogram, iterations, show_time, show_convergence_curve, show_solution, show_quality,
                 show_iterations, show_function_calls, population_size, crossover_probability,
                 mutation_probability);
     }
 
+    if (function == "new") {
+        nonogramCreator(width_random,height_random);
+    }
+
     if (solution_nonogram == 1) {
         std::cout << "This was the Nonogram we were looking for:\n" << nonogramSolution;
     }
+
 
     return 0;
 }

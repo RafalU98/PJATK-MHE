@@ -12,5 +12,6 @@ nonogram_t generate_neighbour(const nonogram_t &nonogram);
 nonogram_t generate_neighbour_almost_normal(const nonogram_t &nonogram);
 nonogram_t generate_best_neighbour(const nonogram_t &nonogram);
 bool operator==(nonogram_t left, nonogram_t right);
+void nonogramCreator(int width, int height);
 
 #endif //MHE_PROJECT_NONOGRAM_HELP_FUNCTIONS_H
